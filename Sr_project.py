@@ -90,7 +90,7 @@ def getKey():
 	print(get_rec_faculty)	
 
 
-	
+	print("test git")
 	
 
 	return render_template('index.html',Recommendation=Recommendation,All_Detail=All_Detail)
