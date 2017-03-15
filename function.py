@@ -1,6 +1,9 @@
 
 import pyorient	
 
+
+import pyorient	
+
 class Project():
 	"""docstring for ClassName"""
 	def __init__(self, arg):
@@ -9,14 +12,14 @@ class Project():
 		
 
 
-	def getRankRelation(self,keyword,client):
+	def getRankRelation(self,keyword):
 		catch_out=[]
 		compare_str=""
 		comtf=""
 		catch_ranktf=[]
 		Search_rank ="select from hasword where term[0] like '%"
 		Search_rank=Search_rank+keyword+"%" +"'"+   "order by tfidf desc"
-		return_rank = client.command(Search_rank)
+		return_rank = self.client.command(Search_rank)
 		cc=0
 		for All_re in return_rank:
 			compare_str=''.join(str(All_re.out))
@@ -37,7 +40,7 @@ class Project():
 	
 		return catch_out,catch_ranktf		
 
-	def getDoc1(self,catch_out,catch_ranktf,cc,client):
+	def getDoc1(self,catch_out,catch_ranktf,cc):
 		Static_term="select @rid , department, faculty, filename from document where @rid="
 		New=""
 		Query_doc=[]
@@ -61,7 +64,7 @@ class Project():
 		#Keyword take Doc
 		allRid=[]
 		for e in Query_doc:
-			Return_Doc = client.command(e)
+			Return_Doc = self.client.command(e)
 
 			for d in Return_Doc:
 				tostring=''.join(str(d.rid))
@@ -77,7 +80,7 @@ class Project():
 
 		return allRid,get_department,get_faculty,get_filename
 	
-	def getDoc(self,catch_out,catch_ranktf,cc,client):
+	def getDoc(self,catch_out,catch_ranktf,cc):
 		Static_term="select @rid , department, faculty, filename from document where @rid="
 		New=""
 		Query_doc=[]
@@ -100,7 +103,7 @@ class Project():
 		#Keyword take Doc
 		allRid=[]
 		for e in Query_doc:
-			Return_Doc = client.command(e)
+			Return_Doc = self.client.command(e)
 
 			for d in Return_Doc:
 				tostring=''.join(str(d.rid))
@@ -115,7 +118,7 @@ class Project():
 
 		return allRid
 
-	def getrecommend(self,rid,client):
+	def getrecommend(self,rid):
 		Static_term="select from document where @rid="
 		New=""
 		Query_doc=[]
@@ -134,7 +137,7 @@ class Project():
 		#Keyword take Doc
 		allRid=[]
 		for e in Query_doc:
-			Return_Doc = client.command(e)
+			Return_Doc = self.client.command(e)
 
 			for d in Return_Doc:
 				get_department.append(d.department)
@@ -145,7 +148,7 @@ class Project():
 
 		return get_faculty,get_department,get_filename				
 
-	def getHasword(self,all_rid,_key,client):
+	def getHasword(self,all_rid,_key):
 
 		catch_sql=[]
 		static_sql="select expand( out( hasword )) from document where @rid ="
@@ -162,7 +165,7 @@ class Project():
 	####query all key#########
 	##################
 		for query in catch_sql:
-			rs_termindex_all=client.command(query)
+			rs_termindex_all=self.client.command(query)
 			for all_termindex in rs_termindex_all:
 				try:
 					if all_termindex.keyword!=_key:
@@ -266,8 +269,8 @@ class Project():
 
 
 		return __c
-
-	def get_title(self,rid,client):
+	######################	
+	def get_title(self,rid):
 		static_sql="select expand( out( hasword )) from document where @rid ="
 		catch_sql=[]
 
@@ -284,7 +287,7 @@ class Project():
 			###query all title of documnet #########
 				##################
 		for query in catch_sql:
-			rs_termindex_all=client.command(query)
+			rs_termindex_all=self.client.command(query)
 			for all_termindex in rs_termindex_all:
 				try:
 					rs_hasword.append(all_termindex.title)
@@ -293,6 +296,7 @@ class Project():
 			
 		
 		return rs_hasword
+	######################	
 	def Keymatch(self,_check,_rid):
 		_recom=[]
 		c=0
@@ -307,9 +311,7 @@ class Project():
 				c=0		
 		#print(_recom)
 		return _recom
-
-
-
+	######################	
 	def Doc_match(self,_doc):
 	
 		c01=[]
@@ -342,26 +344,82 @@ class Project():
 
 		return c01			
 
+	def setclient(self):
+		self.client = pyorient.OrientDB("localhost", 2424) 
+		session_id = self.client.connect( "root", "*" );
+		self.client.db_open( "Project", "root","*")
+	
+	def Search_Title(self,keyword):
+		static_sql="select expand( in( hastitlekeyword )) from termtitlekeyword where keyword='"
+		titleSQL=""
+		titleSQL=static_sql+keyword+"'"
+		rs_title_key=[]
+
+		
+		## get title keyword
+		rs_termindex_all=self.client.command(titleSQL)
+		for i in rs_termindex_all:
+			try:
+				rs_title_key.append(i.title)
+			except AttributeError:
+				pass
+
+		########################################################
+		# search rid of title keyword because to take document #
+		########################################################
+		query_rid="select @rid from title where title='"
+		rs_rid=[]
+		rs_rid_title=[]
+		for i in rs_title_key:
+			query_rid_real=query_rid+i+"'"
+			rs_rid=self.client.command(query_rid_real)
+			for y in rs_rid:
+				tostring=''.join(str(y.rid))
+				rs_rid_title.append(tostring)
+
+		print("test : ",rs_rid_title)		
+		#################################################
+		
+		##  Rid in find out hastitle
+
+		#################################################
+		query_static_out="select from hastitle where in='"
+		query_out=""
+		for_out=[]
+		get_out=[]
+		out_tostring=""
+		for i in rs_rid_title:
+			query_out=query_static_out+i+"'"
+			for_out=self.client.command(query_out)
+			for y in for_out:
+				out_tostring=''.join(str(y.out))
+				get_out.append(out_tostring)
+
+		print("out document : ",get_out)
+
+		
+		return rs_title_key,get_out
+##########################################################		
+	def get_DocwithOut(self,out):
+		static_sql="select department, faculty, filename from document where @rid="
+		all_sql=""
+		qdoc=[]
+		get_department=[]
+		get_faculty=[]
+		get_filename=[]
+
+		for i in out:
+			all_sql=static_sql+i
+			qdoc=self.client.command(all_sql)
+			for y in qdoc:
+				get_faculty.append(y.faculty)
+				get_department.append(y.department)
+				get_filename.append(y.filename)
+
+		return 	get_faculty,get_department,get_filename	
 ##########################################################
 ################# Main first  ##################################
 ##########################################################
-
-
-### get keyword from termindex
-
-#keyword=Callobj.getTermindex(keyword)
-#########################
-##get ranking word in doc#######
-#############################
-
-
-
-
-##########################
-##########################
-## keymatch and max keyword to reccmommend and get 1 doc recomended##
-#########################
-##########################
 
 
 

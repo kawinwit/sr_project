@@ -14,16 +14,30 @@ def index():
 def getKey():
 	if request.method=="POST":
 		keyword=request.form['keywords']
-
-	client = pyorient.OrientDB("localhost", 2424) 
-	session_id = client.connect( "root", "*" );
-	client.db_open( "Project", "root","*")
+ ##################### ##################### ##################### ##
+#################################################	
+##### connect db  ##################### ##############
+#################################################	 
+#################################################	
 	Callobj=Project(object)	
+	Callobj.setclient()
 
-	rid_doc=[]
+
+#######	#################################################
+	#######   directly search title by keyword ##############
+	 ##################### ##################### ##################### #####################
+#################################################	
+	title_all=[]
+	title_all=Callobj.Search_Title(keyword)
 	
+
+ ##################### ##################### ##################### #####################
+#################################################	 ##################### ##################### ##################### #####################
+#################################################	 ##################### ##################### ##################### #####################
+#################################################	
+	rid_doc=[]	
 	rank=[]
-	rid_doc,rank=Callobj.getRankRelation(keyword,client)
+	rid_doc,rank=Callobj.getRankRelation(keyword)
 
 	real_rid=[]
 	get_department=[]
@@ -34,15 +48,15 @@ def getKey():
 	##take doc and zip to template ###############
 	##normal search with keyword  ##########
 	######################################
-	real_rid,get_department,get_faculty,get_filename=Callobj.getDoc1(rid_doc,rank,1,client)
-	get_title=Callobj.get_title(real_rid,client)
+	real_rid,get_department,get_faculty,get_filename=Callobj.getDoc1(rid_doc,rank,1)
+	get_title=Callobj.get_title(real_rid)
 	All_Detail=zip(get_faculty,get_department,get_filename,get_title)
 
 	###########################################
 	##  fine keyword each doc and match keyword 
 	############################################
 	hasword=[]
-	hasword=Callobj.getHasword(real_rid,keyword,client)
+	hasword=Callobj.getHasword(real_rid,keyword)
 
 
 	_r=[]
@@ -58,8 +72,8 @@ def getKey():
 	print("\n")
 	for x in hasword:
 		print("key recommended :",x)
-		rid_doc,rank=Callobj.getRankRelation(x,client)
-		_rid=Callobj.getDoc(rid_doc,rank,1,client)
+		rid_doc,rank=Callobj.getRankRelation(x)
+		_rid=Callobj.getDoc(rid_doc,rank,1)
 
 		#############################################
 		###check ketmatch dont same before search###
@@ -71,26 +85,33 @@ def getKey():
 		# result match key and will going takedoc next step
 		######################################
 
-	print(_formatchdoc)	
+	print("formatch doc",_formatchdoc)	
 
 	_recommended=Callobj.Doc_match(_formatchdoc)
+
+	print(" Rid Recommend= ",_recommended)
+
 	get_rec_department=[]
 	get_rec_faculty=[]
 	get_rec_filename=[]
 	get_rec_title=[]
 	
-	get_rec_faculty,get_rec_department,get_rec_filename=Callobj.getrecommend(_recommended,client)
-	get_rec_title=Callobj.get_title(_recommended,client)
+	get_rec_faculty,get_rec_department,get_rec_filename=Callobj.getrecommend(_recommended)
+	get_rec_title=Callobj.get_title(_recommended)
 
 
 
 	Recommendation=zip(get_rec_faculty,get_rec_department,get_rec_filename,get_rec_title)
 
 	
-	print(get_rec_faculty)	
+	get_titlefirst,get_outtotakedoc=Callobj.Search_Title(keyword)
+	#print("test get title : ",get_titlefirst)
+	title_faculty,title_department,title_filename=Callobj.get_DocwithOut(get_outtotakedoc)
+	#print("test tak doc",title_faculty,title_department,title_filename)
+	directly_search=zip(get_titlefirst,title_faculty,title_department,title_filename)
 
 
-	print("test git")
+
 	
 
 	return render_template('index.html',Recommendation=Recommendation,All_Detail=All_Detail)
