@@ -110,7 +110,36 @@
                         </div>
                     </form>
 
-                    {% if All_Detail%}
+                     <div class="table-responsive">
+ 
+                     <br>       
+                    <h3>Directly Search by title</h3> 
+                 <table class="table ">
+                <thead>
+                 <tr class="active">
+
+                    <th>Faculty</th>
+                    <th>Department</th>
+                    <th>Title</th>
+                    <th>Document Name</th>
+
+                 </tr>
+                </thead>
+             <tbody>
+                     {%  for get_titlefirst,title_faculty,title_department,title_filename in Directly %}
+               <tr class="warning">
+
+                  <td>{{title_faculty}}</td>
+                  <td>{{title_department}}</td>
+                  <td>{{get_titlefirst}}</td>
+                  <td>{{title_filename}}</td>
+                 </tr>
+                           {% endfor %}
+                 </tbody>
+                </table>
+                </div>
+
+
                           <div class="table-responsive">
  
                      <br>       
@@ -130,8 +159,7 @@
                      {%  for get_faculty,get_department,get_filename,get_title in All_Detail %}
                <tr class="info">
 
-              <td>{{get_faculty}}</td>
-
+                  <td>{{get_faculty}}</td>
                   <td>{{get_department}}</td>
                   <td>{{get_title}}</td>
                   <td>{{get_filename}}</td>
@@ -158,7 +186,6 @@
                      {%  for get_re_faculty,get_re_department,get_re_filename,get_rec_title in Recommendation %}
                <tr class="success">
                     <td>{{get_re_faculty}}</td>
-
                   <td>{{get_re_department}}</td>
                    <td>{{get_rec_title}}</td>
                   <td>{{get_re_filename}}</td>
@@ -167,7 +194,7 @@
                  </tbody>
                 </table>
                 </div>
-                    {% endif %}
+            
                 </div>
 
 

@@ -27,15 +27,17 @@ def getKey():
 	#######   directly search title by keyword ##############
 	 ##################### ##################### ##################### #####################
 #################################################	
-	title_all=[]
-	title_all=Callobj.Search_Title(keyword)
+	
+	get_titlefirst,get_outtotakedoc=Callobj.Search_Title(keyword)
+	#print("test get title : ",get_titlefirst)
+	title_faculty,title_department,title_filename=Callobj.get_DocwithOut(get_outtotakedoc)
+	#print("test tak doc",title_faculty,title_department,title_filename)
+	directly_search=zip(get_titlefirst,title_faculty,title_department,title_filename)
 	
 
  ##################### ##################### ##################### #####################
 #################################################	 ##################### ##################### ##################### #####################
-#################################################	 ##################### ##################### ##################### #####################
-#################################################	
-	rid_doc=[]	
+
 	rank=[]
 	rid_doc,rank=Callobj.getRankRelation(keyword)
 
@@ -82,7 +84,7 @@ def getKey():
 		_formatchdoc.append(_r)
 
 		###################################################
-		# result match key and will going takedoc next step
+		# result match key and will going  takedoc next step
 		######################################
 
 	print("formatch doc",_formatchdoc)	
@@ -102,19 +104,9 @@ def getKey():
 
 
 	Recommendation=zip(get_rec_faculty,get_rec_department,get_rec_filename,get_rec_title)
+ 
 
-	
-	get_titlefirst,get_outtotakedoc=Callobj.Search_Title(keyword)
-	#print("test get title : ",get_titlefirst)
-	title_faculty,title_department,title_filename=Callobj.get_DocwithOut(get_outtotakedoc)
-	#print("test tak doc",title_faculty,title_department,title_filename)
-	directly_search=zip(get_titlefirst,title_faculty,title_department,title_filename)
-
-
-
-	
-
-	return render_template('index.html',Recommendation=Recommendation,All_Detail=All_Detail)
+	return render_template('index.html',Recommendation=Recommendation,All_Detail=All_Detail,Directly=directly_search)
 
 if __name__=="__main__":
 	app.run(debug=True)
