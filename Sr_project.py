@@ -27,10 +27,15 @@ def getKey():
 	#######   directly search title by keyword ##############
 	 ##################### ##################### ##################### #####################
 #################################################	
-	
-	get_titlefirst,get_outtotakedoc=Callobj.Search_Title(keyword)
-	#print("test get title : ",get_titlefirst)
+	if (' ' in keyword) is True:
+		get_titlefirst,get_outtotakedoc=Callobj.New_search_title(keyword)
+	else:
+		get_titlefirst,get_outtotakedoc=Callobj.Search_Title(keyword)
+
+
 	title_faculty,title_department,title_filename=Callobj.get_DocwithOut(get_outtotakedoc)
+
+	
 	#print("test tak doc",title_faculty,title_department,title_filename)
 	directly_search=zip(get_titlefirst,title_faculty,title_department,title_filename)
 	

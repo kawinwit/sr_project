@@ -17,7 +17,7 @@ class Project():
 		compare_str=""
 		comtf=""
 		catch_ranktf=[]
-		Search_rank ="select from hasword where term[0] like '%"
+		Search_rank ="select from hasword where term[0] like '"
 		Search_rank=Search_rank+keyword+"%" +"'"+   "order by tfidf desc"
 		return_rank = self.client.command(Search_rank)
 		cc=0
@@ -226,8 +226,8 @@ class Project():
 		for x in _has:
 			_catch_hasdoc.append(x)
 
-		print(_catch_pop,"\n")
-		print(_has)
+		#print(_catch_pop,"\n")
+		#print(_has)
 		
 		_c=[]
 		_forCom=[]
@@ -352,9 +352,9 @@ class Project():
 		return
 	
 	def Search_Title(self,keyword):
-		static_sql="select expand( in( hastitlekeyword )) from termtitlekeyword where keyword='"
+		static_sql="select expand( in( hastitlekeyword )) from termtitlekeyword where keyword like '"
 		titleSQL=""
-		titleSQL=static_sql+keyword+"'"
+		titleSQL=static_sql+keyword+"%'"
 		rs_title_key=[]
 
 		
@@ -419,7 +419,25 @@ class Project():
 				get_filename.append(y.filename)
 
 		return 	get_faculty,get_department,get_filename
+##########################################################
+	def New_search_title(self,keyword):
+		static_sql="select from hastitle where title like '%"
+		titleSQL=""
+		titleSQL=static_sql+keyword+"%'"
+		rs_title_key=[]
+		for_out=[]
+		out_tostring=""
+		
+		## get title keyword
+		rs_termindex_all=self.client.command(titleSQL)
+		for i in rs_termindex_all:
+			out_tostring=''.join(str(i.out))
+			for_out.append(out_tostring)
+			rs_title_key.append(i.title)
+		
+		return rs_title_key,for_out
 			
+
 ##########################################################
 ################# Main first  ##################################
 ##########################################################
