@@ -1,9 +1,6 @@
 
 import pyorient	
 
-
-import pyorient	
-
 class Project():
 	"""docstring for ClassName"""
 	def __init__(self, arg):
@@ -17,7 +14,7 @@ class Project():
 		compare_str=""
 		comtf=""
 		catch_ranktf=[]
-		Search_rank ="select from hasword where term[0] like '%"
+		Search_rank ="select from hasword where term[0] like '"
 		Search_rank=Search_rank+keyword+"%" +"'"+   "order by tfidf desc"
 		return_rank = self.client.command(Search_rank)
 		cc=0
@@ -352,9 +349,9 @@ class Project():
 		return
 	
 	def Search_Title(self,keyword):
-		static_sql="select expand( in( hastitlekeyword )) from termtitlekeyword where keyword='"
+		static_sql="select expand( in( hastitlekeyword )) from termtitlekeyword where keyword like '"
 		titleSQL=""
-		titleSQL=static_sql+keyword+"'"
+		titleSQL=static_sql+keyword+"%'"
 		rs_title_key=[]
 
 		
