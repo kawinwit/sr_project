@@ -34,8 +34,6 @@ def getKey():
 
 
 	title_faculty,title_department,title_filename=Callobj.get_DocwithOut(get_outtotakedoc)
-
-	
 	#print("test tak doc",title_faculty,title_department,title_filename)
 	directly_search=zip(get_titlefirst,title_faculty,title_department,title_filename)
 	

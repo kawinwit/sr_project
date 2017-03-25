@@ -356,13 +356,15 @@ class Project():
 		titleSQL=""
 		titleSQL=static_sql+keyword+"%'"
 		rs_title_key=[]
-
+		c=0
 		
 		## get title keyword
 		rs_termindex_all=self.client.command(titleSQL)
 		for i in rs_termindex_all:
+			c=rs_title_key.count(i.title)
 			try:
-				rs_title_key.append(i.title)
+				if c==0:
+					rs_title_key.append(i.title)
 			except AttributeError:
 				pass
 
